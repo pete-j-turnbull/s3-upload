@@ -7,6 +7,11 @@ var koaLogger = require('./utilities/koa-logger');
 var config = require('./config/config');
 var aws = require('aws-sdk')
 
+var crypto = require('crypto');
+function sha256(data) {
+    return crypto.createHash("sha256").update(data).digest("base64");
+}
+
 //var index = require('./routes/index');
 //var upload = require('./routes/upload');
 
@@ -46,10 +51,11 @@ var _sign = function (filename, filetype) {
 app.use(route.get('/sign', function *() {
 	try {
 		var filename = this.query.file_name;
+		var hashedFilename = sha256(filename);
 		var filetype = this.query.file_type;
 
-		var data = yield _sign(filename, filetype);
-		var url = 'https://' + 's3-' + config.region + '.amazonaws.com' + '/' + 'keypla' + '/' + filename;
+		var data = yield _sign(hashedFilename, filetype);
+		var url = 'https://' + 's3-' + config.region + '.amazonaws.com' + '/' + 'keypla' + '/' + hashedFilename;
 
 		var response = { success: true, result: { signedRequest: data, url: url } }
 		log.info(response);
