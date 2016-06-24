@@ -1,0 +1,22 @@
+{
+  "name": "s3-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.4.1",
+    "bluebird": "^3.4.1",
+    "co": "^4.6.0",
+    "debug": "^2.2.0",
+    "koa": "^1.2.0",
+    "koa-body": "^1.4.0",
+    "koa-hbs": "^0.8.1",
+    "koa-route": "^2.4.2",
+    "ms": "^0.7.1"
+  }
+}
