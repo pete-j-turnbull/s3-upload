@@ -1,0 +1,7 @@
+args=("$@")
+tourId=${args[0]}
+
+cd temp;
+mkdir tours;
+cd $tourId;
+for file in ./*; do cp $file ../tours/$tourId; done

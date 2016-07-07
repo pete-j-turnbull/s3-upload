@@ -1,41 +1,33 @@
 var koa = require('koa');
 var Promise = require('bluebird');
-var route = require('koa-route');
+var router = require('koa-router')();
 var hbs = require('koa-hbs');
 var log = require('./utilities/logger');
 var koaLogger = require('./utilities/koa-logger');
 var config = require('./config/config');
-var aws = require('aws-sdk')
+var aws = require('aws-sdk');
 
 var crypto = require('crypto');
 function sha256(data) {
     return crypto.createHash("sha256").update(data).digest("base64");
 }
 
-//var index = require('./routes/index');
-//var upload = require('./routes/upload');
-
-var app = module.exports = koa();
-
-app.use(hbs.middleware({
-    viewPath: __dirname + '/views'
-}));
-app.use(koaLogger());
+var app = koa();
 
 
-app.use(route.get('/', function *() {
+router.get('/', function *() {
 	yield this.render('index', {});
-}));
+});
 
-var _sign = function (filename, filetype) {
+var _sign = function (fileName, fileType) {
 	return new Promise(function(resolve, reject) {
 		aws.config.update({ accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey, region: config.region });
 		var s3 = new aws.S3();
 	    var options = {
 	    	Bucket: 'keypla',
-	      	Key: filename,
+	      	Key: fileName,
 	      	Expires: 60,
-	      	ContentType: filetype,
+	      	ContentType: fileType,
 	      	ACL: 'public-read'
     	};
 
@@ -47,15 +39,18 @@ var _sign = function (filename, filetype) {
     		}
     	});
 	});
-}
-app.use(route.get('/sign', function *() {
+};
+router.get('/sign', function *() {
 	try {
-		var filename = this.query.file_name;
-		var hashedFilename = sha256(filename);
-		var filetype = this.query.file_type;
+		var fileType = this.query.fileType;
 
-		var data = yield _sign(hashedFilename, filetype);
-		var url = 'https://' + 's3-' + config.region + '.amazonaws.com' + '/' + 'keypla' + '/' + hashedFilename;
+		var tourName = this.query.tourName;
+		var imgNumber = this.query.imgNumber;
+
+		var tourHash = sha256(tourName).replace('/', '=');
+
+		var data = yield _sign(tourHash + '/' + imgNumber, fileType);
+		var url = 'https://' + 's3-' + config.region + '.amazonaws.com' + '/' + 'keypla' + '/' + tourHash + '/' + imgNumber;
 
 		var response = { success: true, result: { signedRequest: data, url: url } }
 		log.info(response);
@@ -67,7 +62,14 @@ app.use(route.get('/sign', function *() {
 		this.body = response;
 	}
 
+});
+
+
+app.use(koaLogger());
+app.use(hbs.middleware({
+    viewPath: __dirname + '/views'
 }));
+app.use(router.routes());
 
 
 if (!module.parent) {

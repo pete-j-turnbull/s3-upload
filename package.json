@@ -4,20 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": ""
+    "server": "node --harmony src/server/app.js",
+    "server:dev": "nodemon --harmony --watch src/server -e js,hbs src/server/app.js",
+    "worker": "node --harmony src/worker/worker.js",
+    "worker:dev": "nodemon --harmony --watch src/worker -e js src/worker/worker.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "asyncawait": "^1.0.6",
     "aws-sdk": "^2.4.1",
     "bluebird": "^3.4.1",
     "co": "^4.6.0",
     "crypto": "0.0.3",
     "debug": "^2.2.0",
+    "exec": "^0.2.1",
+    "jackrabbit": "^4.3.0",
     "koa": "^1.2.0",
     "koa-body": "^1.4.0",
     "koa-hbs": "^0.8.1",
-    "koa-route": "^2.4.2",
+    "koa-router": "^5.4.0",
     "ms": "^0.7.1"
   }
 }

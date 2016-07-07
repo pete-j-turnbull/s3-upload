@@ -30,27 +30,28 @@ function * log (next) {
 	var err;
 	
 	try {
-	  yield next;
+	  	yield next;
 	} catch (e) {
-	  err = e;
-	  this.status = err.status || 500;
+	  	err = e;
+	  	this.status = err.status || 500;
 	}
+	
 	
 	var end = Date.now();
 	
 	var params = {
-	  method: this.method.toUpperCase(),
-	  path: this.url,
-	  status: this.status,
-	  time: ms(end - start),
-	  header: serialize(this.request.header),
-	  body: serialize(this.request.body || {})
+	  	method: this.method.toUpperCase(),
+	  	path: this.url,
+	  	status: this.status,
+	  	time: ms(end - start),
+	  	header: serialize(this.request.header),
+	  	body: serialize(this.request.body || {})
 	};
 	
 	var output = options.format;
 	
 	Object.keys(params).forEach(function (param) {
-	  output = output.replace(':' + param, params[param]);
+	  	output = output.replace(':' + param, params[param]);
 	});
 	
 	// insert spaces
@@ -66,24 +67,24 @@ function * log (next) {
  * Utilities
  */
 function serialize (obj) {
-  if (Object.prototype.toString.call(obj) !== '[object Object]') return obj;
-  
-  // request params keys
-  var keys = Object.keys(obj);
-  
-  // filter out keys
-  keys = keys.filter(function (key) {
-    return options.filter.indexOf(key) === -1;
-  });
-  
-  // convert to stirng
-  obj = keys.map(function (key) {
-    return format('%s: %s', key, obj[key]);
-  });
-  
-  return format('{ %s }', obj.join(', '));
+	if (Object.prototype.toString.call(obj) !== '[object Object]') return obj;
+
+	// request params keys
+	var keys = Object.keys(obj);
+
+	// filter out keys
+	keys = keys.filter(function (key) {
+		return options.filter.indexOf(key) === -1;
+	});
+
+	// convert to stirng
+	obj = keys.map(function (key) {
+		return format('%s: %s', key, obj[key]);
+	});
+
+	return format('{ %s }', obj.join(', '));
 }
 
 function indent (str) {
-  return new Array(options.indent + 1).join(' ') + str;
+  	return new Array(options.indent + 1).join(' ') + str;
 }

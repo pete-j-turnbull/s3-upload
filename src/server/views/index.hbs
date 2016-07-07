@@ -23,9 +23,9 @@
                 xhr.send(file);
             }
 
-            function sign_request (file, done) {
+            function sign_request (tourName, file, done) {
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "/sign?file_name=" + file.name + "&file_type=" + file.type);
+                xhr.open("GET", "/sign?tourName=" + tourName + "&imgNumber=" + "0" + "&fileType=" + file.type);
 
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4 && xhr.status === 200) {
@@ -41,7 +41,7 @@
                 var file = document.getElementById('image').files[0];
                 if (!file) return;
 
-                sign_request(file, function (response) {
+                sign_request('testTour', file, function (response) {
 
                     if (response.success) {
                         upload(file, response.result.signedRequest, response.result.url, function () {
